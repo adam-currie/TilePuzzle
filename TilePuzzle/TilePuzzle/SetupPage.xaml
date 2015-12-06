@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="TilePuzzle.SetupPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TilePuzzle"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RenderTransformOrigin="0.498,0.501">
+        <StackPanel x:Name="mainPanel" Height="102" Margin="-100000" HorizontalAlignment="Center" Width="200" VerticalAlignment="Center">
+            <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="Puzzle Style" Margin="0,0,0,10"/>
+            <Button x:Name="loadImageButton" Content="From Image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5" Click="loadImageButton_Click"/>
+            <Button x:Name="numberedTilesButton" Content="Numbered Tiles" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5"/>
+        </StackPanel>
+    </Grid>
+</Page>
