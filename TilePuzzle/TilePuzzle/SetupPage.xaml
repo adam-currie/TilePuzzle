@@ -11,7 +11,7 @@
         <StackPanel x:Name="mainPanel" Height="102" Margin="-100000" HorizontalAlignment="Center" Width="200" VerticalAlignment="Center">
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="Puzzle Style" Margin="0,0,0,10"/>
             <Button x:Name="loadImageButton" Content="From Image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5" Click="loadImageButton_Click"/>
-            <Button x:Name="numberedTilesButton" Content="Numbered Tiles" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5"/>
+            <Button x:Name="numberedTilesButton" Content="Numbered Tiles" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5" Click="numberedTilesButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

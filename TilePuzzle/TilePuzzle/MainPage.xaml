@@ -10,8 +10,8 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel x:Name="mainPanel" Height="146" Margin="-100000" Background="#FFB4B4B4" VerticalAlignment="Center" HorizontalAlignment="Center" Width="200">
             <Button x:Name="newGameButton" Content="New Game" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5" Click="newGameButton_Click"/>
-            <Button x:Name="leaderboardButton" Content="Leaderboard" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5"/>
-            <Button x:Name="quitButton" Content="Quit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0"/>
+            <Button x:Name="leaderboardButton" Content="Leaderboard" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,5" Click="leaderboardButton_Click"/>
+            <Button x:Name="quitButton" Content="Quit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" Click="quitButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

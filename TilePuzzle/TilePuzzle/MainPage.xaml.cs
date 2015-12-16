@@ -34,5 +34,13 @@ namespace TilePuzzle
             this.Frame.Navigate(typeof(SetupPage));
         }
 
+        private void leaderboardButton_Click(object sender, RoutedEventArgs e) {
+            this.Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore("Dylan", 69));
+        }
+
+        private void quitButton_Click(object sender, RoutedEventArgs e)  {
+            Application.Current.Exit();
+        }
+
     }
 }

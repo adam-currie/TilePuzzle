@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -16,6 +17,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -55,8 +57,7 @@ namespace TilePuzzle {
             StorageFile file = await openPicker.PickSingleFileAsync();
 
             if(file != null) {
-                //todo: pass image object to next page
-                this.Frame.Navigate(typeof(GamePage));
+                this.Frame.Navigate(typeof(GamePage), file);
             } else {
                 MessageDialog messageDialog = new MessageDialog("Cannot open image.");
                 messageDialog.Commands.Add(new UICommand("Ok"));
@@ -65,6 +66,9 @@ namespace TilePuzzle {
             }   
         }
 
+        private void numberedTilesButton_Click(object sender, RoutedEventArgs e){
+            this.Frame.Navigate(typeof(GamePage));
+        }
     }
 
 }
