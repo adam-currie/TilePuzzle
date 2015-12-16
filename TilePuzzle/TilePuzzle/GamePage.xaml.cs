@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -63,7 +64,6 @@ namespace TilePuzzle {
         }
 
         private async void loadImageGame(StorageFile file) {
-
             //split image into 16 smaller images for puzzle
             int index = 0;
             for (int i = 0; i < numRowsAndCols; i++) {
@@ -75,16 +75,20 @@ namespace TilePuzzle {
                     InMemoryRandomAccessStream ras = new InMemoryRandomAccessStream();
                     BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(ras, decoder);
 
-                    //make each image the size of the grid
-                    encoder.BitmapTransform.ScaledHeight = gridSize;
-                    encoder.BitmapTransform.ScaledWidth = gridSize;
+                    //reduce either width or height to make image square
+                    uint croppedSize;
+                    if(decoder.PixelHeight > decoder.PixelWidth) {
+                        croppedSize = decoder.PixelWidth;
+                    } else {
+                        croppedSize = decoder.PixelHeight;
+                    }
 
                     //Transform bitmap and cut out tile size image
                     BitmapBounds bounds = new BitmapBounds();
-                    bounds.Height = tileSize;
-                    bounds.Width = tileSize;
-                    bounds.X = (uint)i * bounds.Height;
-                    bounds.Y = (uint)j * bounds.Width;
+                    bounds.Height = croppedSize/4;
+                    bounds.Width = croppedSize/4;
+                    bounds.X = ((decoder.PixelWidth-croppedSize)/2) + ((uint)i * bounds.Width);
+                    bounds.Y = ((decoder.PixelHeight-croppedSize)/2) + ((uint)j * bounds.Height);
                     encoder.BitmapTransform.Bounds = bounds;
 
                     try {
