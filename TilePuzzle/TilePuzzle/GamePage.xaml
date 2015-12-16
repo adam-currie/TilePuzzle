@@ -13,7 +13,7 @@
             <Button x:Name="RandomizeButton" Content="Randomize Tiles" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="RandomizeButton_Click" Margin="0,0,0,10"/>
             <Button x:Name="ChangePuzzleButton" Content="Change Puzzle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="ChangePuzzleButton_Click" Margin="0,0,0,10"/>
         </StackPanel>
-        <Grid x:Name="puzzleGrid" AllowDrop="True" DragOver="puzzleGrid_DragOver" Drop="puzzleGrid_Drop" MaxWidth="1000" MaxHeight="1000" Margin="50" BorderThickness="3" BorderBrush="#FF535353" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0">
+        <Grid x:Name="puzzleGrid" AllowDrop="True" DragOver="puzzleGrid_DragOver" Drop="puzzleGrid_Drop" MaxWidth="1000" MaxHeight="1000" Margin="200,50,50,50" BorderThickness="3" BorderBrush="#FF535353" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
