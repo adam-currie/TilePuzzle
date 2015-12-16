@@ -102,6 +102,9 @@
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GetNamePopup.xaml.cs">
+      <DependentUpon>GetNamePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LeaderboardPage.xaml.cs">
       <DependentUpon>LeaderboardPage.xaml</DependentUpon>
     </Compile>
@@ -137,6 +140,10 @@
     <Page Include="GamePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GetNamePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="LeaderboardPage.xaml">
       <Generator>MSBuild:Compile</Generator>

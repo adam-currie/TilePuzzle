@@ -23,10 +23,9 @@ namespace TilePuzzle
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
-    {
-        public MainPage()
-        {
+    public sealed partial class MainPage : Page {
+
+        public MainPage() {
             this.InitializeComponent();
         }
 
@@ -35,12 +34,11 @@ namespace TilePuzzle
         }
 
         private void leaderboardButton_Click(object sender, RoutedEventArgs e) {
-            this.Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore("Dylan", 69));
+            this.Frame.Navigate(typeof(LeaderboardPage));
         }
 
         private void quitButton_Click(object sender, RoutedEventArgs e)  {
             Application.Current.Exit();
         }
-
     }
 }

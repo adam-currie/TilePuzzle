@@ -178,13 +178,34 @@ namespace TilePuzzle {
             }
         }
 
+        private bool checkSolved(){
+            bool retValue = false;
+            for (int i = 0; i < tiles.Count - 1; i++) {
+                if (puzzleGrid.Children[i] == tiles[i]) {
+                    retValue = true;
+                }
+                else {
+                    retValue = false;
+                }
+            }
+
+            return retValue;
+        }
+
         private void puzzleGrid_DragOver(object sender, DragEventArgs e) {
             //todo: anything?
             e.AcceptedOperation = DataPackageOperation.Copy;
         }
 
-        private void puzzleGrid_Drop(object sender, DragEventArgs e) {                
+        private void puzzleGrid_Drop(object sender, DragEventArgs e) {
             //todo: somehow check for empty spot, drop image being dragged into empty spot
+            if(checkSolved() == true){
+                namePopup.IsOpen = true;
+                ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
+                    namePopup.IsOpen = false;
+                    Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
+                };
+            }
         }
 
         private void gamePageGrid_SizeChanged(object sender, SizeChangedEventArgs e) {
