@@ -118,7 +118,6 @@ namespace TilePuzzle {
 
             //Add tiles to grid
             for (int i = 0; i < tiles.Count - 1; i++)  {
-
                 puzzleGrid.Children.Add(tiles[i]);
             }
             
@@ -250,5 +249,69 @@ namespace TilePuzzle {
             secondsElapsed++;
             timeText.Text = "Time Elapsed: " + secondsElapsed;
         }
+
+        private void puzzleGrid_Tapped(object sender, TappedRoutedEventArgs e) {
+            Rectangle tile = (Rectangle)e.OriginalSource;
+            int oldX = Grid.GetColumn(tile);
+            int oldY = Grid.GetRow(tile);
+
+            //try to move down
+            try {
+                if(GetAtGridPos(puzzleGrid, oldX, oldY+1) == null) {
+                    tile.SetValue(Grid.ColumnProperty, oldX);
+                    tile.SetValue(Grid.RowProperty, oldY+1);
+                    return;
+                }
+            } catch(IndexOutOfRangeException) {
+            }
+
+            //try to move up
+            try {
+                if(GetAtGridPos(puzzleGrid, oldX, oldY-1) == null) {
+                    tile.SetValue(Grid.ColumnProperty, oldX);
+                    tile.SetValue(Grid.RowProperty, oldY-1);
+                    return;
+                }
+            } catch(IndexOutOfRangeException) {
+            }
+
+            //try to move left
+            try {
+                if(GetAtGridPos(puzzleGrid, oldX-1, oldY) == null) {
+                    tile.SetValue(Grid.ColumnProperty, oldX-1);
+                    tile.SetValue(Grid.RowProperty, oldY);
+                    return;
+                }
+            } catch(IndexOutOfRangeException) {
+            }
+
+            //try to move right
+            try {
+                if(GetAtGridPos(puzzleGrid, oldX+1, oldY) == null) {
+                    tile.SetValue(Grid.ColumnProperty, oldX+1);
+                    tile.SetValue(Grid.RowProperty, oldY);
+                    return;
+                }
+            } catch(IndexOutOfRangeException) {
+            }
+
+            e.Handled = true;
+        }
+
+        private static FrameworkElement GetAtGridPos(Grid g, int x, int y) {
+            if(x >= g.ColumnDefinitions.Count || y >= g.RowDefinitions.Count || x < 0 || y < 0){
+                throw new IndexOutOfRangeException("x and y must be withing range of column and row definitions of g");
+            }
+
+            FrameworkElement ret = null;
+            foreach(FrameworkElement e in g.Children) {
+                if(Grid.GetColumn(e) == x && Grid.GetRow(e) == y) {
+                    ret = e;
+                    break;
+                }
+            }
+            return ret;
+        }
+
     }
 }
