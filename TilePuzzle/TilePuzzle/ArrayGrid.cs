@@ -9,33 +9,21 @@ using Windows.UI.Xaml.Controls;
 namespace TilePuzzle {
 
     public sealed partial class ArrayGrid : Grid{
-        private readonly int width, height;
+        private int width, height;
         private List<UIElement> arr;
 
-        public ArrayGrid(int width, int height) : base(){
-            if(width < 1 || height < 1) {
-                throw new IndexOutOfRangeException("width and height must be greater than 0");
+        public static ArrayGrid ArrayGridFactory(Grid g){
+            ArrayGrid newArrayGrid = (ArrayGrid)g;
+
+            newArrayGrid.width = newArrayGrid.ColumnDefinitions.Count;
+            newArrayGrid.height = newArrayGrid.RowDefinitions.Count;
+
+            newArrayGrid.arr = new List<UIElement>(newArrayGrid.width*newArrayGrid.height);
+            for(int i = 0; i<(newArrayGrid.width*newArrayGrid.height); i++) {
+                newArrayGrid.arr.Add(null);
             }
 
-            this.width = width;
-            this.height = height;
-
-            for(int i=0; i<width; i++) {
-                ColumnDefinition cd = new ColumnDefinition();
-                cd.Width = new GridLength(1, GridUnitType.Star);
-                ColumnDefinitions.Add(cd);
-            }
-
-            for(int i = 0; i<height; i++) {
-                RowDefinition rd = new RowDefinition();
-                rd.Height = new GridLength(1, GridUnitType.Star);
-                RowDefinitions.Add(rd);
-            }
-
-            arr = new List<UIElement>(width*height);
-            for(int i = 0; i<(width*height); i++) {
-                arr.Add(null);
-            }
+            return newArrayGrid;
         }
 
         public UIElement Get(int x, int y) {
