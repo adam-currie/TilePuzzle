@@ -159,7 +159,7 @@ namespace TilePuzzle {
         //              RoutedEventArgs e - event args   
         //Returns     : void         
         private void RandomizeButton_Click(object sender, RoutedEventArgs e) {
-            if(loadingImage) {
+            if (loadingImage){
                 return;
             }
 
@@ -168,63 +168,63 @@ namespace TilePuzzle {
 
             //get empty pos
             bool done = false;
-            for(int x = 0; x<numRowsAndCols; x++) {
-                for(int y = 0; y<numRowsAndCols; y++) {
-                    if(GetAtGridPos(puzzleGrid, x, y) == null) {
+            for (int x = 0; x < numRowsAndCols; x++) {
+                for (int y = 0; y < numRowsAndCols; y++) {
+                    if (GetAtGridPos(puzzleGrid, x, y) == null){
                         emptyX = x;
                         emptyY = y;
                         done = true;
                         break;
                     }
                 }
-                if(done) {
+                if (done) {
                     break;
                 }
-                }
+            }
 
             Random r = new Random();
-            for(int i=0; i<200*numRowsAndCols; i++) {
+            for (int i = 0; i < 200 * numRowsAndCols; i++) {
 
                 int dir = r.Next(4);//direction to move empty tile
 
-                switch(dir) {
+                switch (dir) {
                     case (0)://move empty up(move tile above down)
-                        if(emptyY > 0) {
-                            var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY-1);
+                        if (emptyY > 0) {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY - 1);
                             tile.SetValue(Grid.ColumnProperty, emptyX);
                             tile.SetValue(Grid.RowProperty, emptyY);
 
-                            emptyY = emptyY-1;
-            }
+                            emptyY = emptyY - 1;
+                        }
                         break;
                     case 1://move empty down
-                        if(emptyY < (numRowsAndCols-1)) {
-                            var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY+1);
+                        if (emptyY < (numRowsAndCols - 1)) {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY + 1);
                             tile.SetValue(Grid.ColumnProperty, emptyX);
                             tile.SetValue(Grid.RowProperty, emptyY);
 
-                            emptyY = emptyY+1;
+                            emptyY = emptyY + 1;
                         }
                         break;
                     case 2://move empty left
-                        if(emptyX > 0) {
-                            var tile = GetAtGridPos(puzzleGrid, emptyX-1, emptyY);
+                        if (emptyX > 0){
+                            var tile = GetAtGridPos(puzzleGrid, emptyX - 1, emptyY);
                             tile.SetValue(Grid.ColumnProperty, emptyX);
                             tile.SetValue(Grid.RowProperty, emptyY);
 
-                            emptyX = emptyX-1;
+                            emptyX = emptyX - 1;
                         }
                         break;
                     case 3://move empty right
-                        if(emptyX < (numRowsAndCols-1)) {
-                            var tile = GetAtGridPos(puzzleGrid, emptyX+1, emptyY);
+                        if (emptyX < (numRowsAndCols - 1))  {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX + 1, emptyY);
                             tile.SetValue(Grid.ColumnProperty, emptyX);
                             tile.SetValue(Grid.RowProperty, emptyY);
 
-                            emptyX = emptyX+1;
-                }
+                            emptyX = emptyX + 1;
+                        }
                         break;
-            }
+                }
 
             }
         }
@@ -237,13 +237,13 @@ namespace TilePuzzle {
 
             //Check if each tiles is in its orignal postion
             bool solved = true;
-            for (int i = 0; i < originalTiles.Count - 1; i++) {
+            for (int i = 0; i < originalTiles.Count - 1; i++){
                 if (puzzleGrid.Children[i] != originalTiles[i]) {
                     solved = false;
                 }
             }
 
-            if (solved)  {
+            if (solved){
                 namePopup.IsOpen = true;
                 ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
                     namePopup.IsOpen = false;
