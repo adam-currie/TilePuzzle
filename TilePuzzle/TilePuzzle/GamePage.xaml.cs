@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*
+ * File: GamePage.xaml.cs
+ * Project: Windows and Mobile Programming - Final Project
+ * Programmers: Adam Currie and Dylan O'Neill
+ * First Version: 2015-12-08
+ * Description: Contains the GamePage class and the code behind the game page of the project.
+                The methods in this file hold the main functionality of the game: cutting up the image,
+                randomizing the tiles, moving the tiles, and checking the solution.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -41,6 +51,10 @@ namespace TilePuzzle {
             this.InitializeComponent();
         }
 
+        //Method      : OnNavigatedTo
+        //Description : Handler for when this page is navigated to
+        //Parameters  : NavigationEventArgs e - event args   
+        //Returns     : void         
         protected override void OnNavigatedTo(NavigationEventArgs e) {
 
             //If image was passed, create image puzzle, else create number puzzle
@@ -54,6 +68,10 @@ namespace TilePuzzle {
             }
         }
 
+        //Method      : loadImageGame
+        //Description : Loads a new tile puzzle with an image
+        //Parameters  : StorageFile file - image
+        //Returns     : void              
         private async void loadImageGame(StorageFile file) {
             if(loadingImage) {
                 return;
@@ -127,10 +145,19 @@ namespace TilePuzzle {
             secondsElapsed = 0;
         }
 
+        //Method      : loadNumberGame
+        //Description : Loads a new tile puzzle with numbers
+        //Parameters  : none
+        //Returns     : void         
         private void loadNumberGame() {
             //todo
         }
 
+        //Method      : RandomizeButton_Click
+        //Description : Handler for randomize button click event, randomizes the tiles in the grid
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void         
         private void RandomizeButton_Click(object sender, RoutedEventArgs e) {
             if(loadingImage) {
                 return;
@@ -153,7 +180,7 @@ namespace TilePuzzle {
                 if(done) {
                     break;
                 }
-            }
+                }
 
             Random r = new Random();
             for(int i=0; i<200*numRowsAndCols; i++) {
@@ -168,7 +195,7 @@ namespace TilePuzzle {
                             tile.SetValue(Grid.RowProperty, emptyY);
 
                             emptyY = emptyY-1;
-                        }
+            }
                         break;
                     case 1://move empty down
                         if(emptyY < (numRowsAndCols-1)) {
@@ -195,13 +222,17 @@ namespace TilePuzzle {
                             tile.SetValue(Grid.RowProperty, emptyY);
 
                             emptyX = emptyX+1;
-                        }
-                        break;
                 }
+                        break;
+            }
 
             }
         }
 
+        //Method      : checkSolved
+        //Description : Checks to see if the puzzle is solved
+        //Parameters  : none
+        //Returns     : void         
         private void checkSolved(){
 
             //Check if each tiles is in its orignal postion
@@ -221,6 +252,11 @@ namespace TilePuzzle {
             }
         }
 
+        //Method      : gamePageGrid_SizeChanged
+        //Description : Loads a new tile puzzle with an image
+        //Parameters  : object sender          - sender
+        //              SizeChangedEventArgs e - event args
+        //Returns     : void         
         private void gamePageGrid_SizeChanged(object sender, SizeChangedEventArgs e) {
             double boundsHeight = gamePageGrid.ActualHeight - (puzzleGrid.Margin.Top + puzzleGrid.Margin.Bottom);
             double boundsWidth = gamePageGrid.ActualWidth - (puzzleGrid.Margin.Left + puzzleGrid.Margin.Right);
@@ -234,6 +270,11 @@ namespace TilePuzzle {
             }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
         }
 
+        //Method      : ChangePuzzleButton_Click
+        //Description : Sends user back to setup page to change the current puzzle
+        //Parameters  : object sender     - sender
+        //              RoutedEventArgs e - event args 
+        //Returns     : void         
         private async void ChangePuzzleButton_Click(object sender, RoutedEventArgs e){
             if(loadingImage) {
                 return;
@@ -252,17 +293,31 @@ namespace TilePuzzle {
             await messageDialog.ShowAsync();
         }
 
+        //Method      : CommandInvokedHandler
+        //Description : Handler for when the message dialog receives a command
+        //Parameters  : IUICommand command - command
+        //Returns     : void         
         private void CommandInvokedHandler(IUICommand command)  {
             if (command.Label == "Yes") {
                 this.Frame.Navigate(typeof(SetupPage));
             }
         }
 
+        //Method      : GameTimerTick
+        //Description : Handler for game timer tick event, updates timer
+        //Parameters  : object sender - sender
+        //              object e      - object
+        //Returns     : void         
         private void GameTimerTick(object sender, object e)  {
             secondsElapsed++;
             timeText.Text = "Time Elapsed: " + secondsElapsed;
         }
 
+        //Method      : puzzleGrid_Tapped
+        //Description : Handler for puzzle grid tapped event, moves tile to empty grid space
+        //Parameters  : object sender           - object
+        //              TappedRoutedEventArgs e - event args   
+        //Returns     : void                  
         private void puzzleGrid_Tapped(object sender, TappedRoutedEventArgs e) {
             if(loadingImage) {
                 return;
@@ -280,7 +335,6 @@ namespace TilePuzzle {
 
                     //Check if puzzle is solved
                     checkSolved();
-
                     return;
                 }
             } catch(IndexOutOfRangeException) {
@@ -328,6 +382,12 @@ namespace TilePuzzle {
             e.Handled = true;
         }
 
+        //Method      : GetAtGridPos
+        //Description : returns the element at a certain grid postion
+        //Parameters  : Grid g - grid
+        //              int x  - position x
+        //              int y  - position y
+        //Returns     : FrameworkElement       
         private static FrameworkElement GetAtGridPos(Grid g, int x, int y) {
             if(x >= g.ColumnDefinitions.Count || y >= g.RowDefinitions.Count || x < 0 || y < 0){
                 throw new IndexOutOfRangeException("x and y must be withing range of column and row definitions of g");

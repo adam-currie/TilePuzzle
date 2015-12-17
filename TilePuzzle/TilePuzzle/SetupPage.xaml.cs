@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * File: SetupPage.xaml.cs
+ * Project: Windows and Mobile Programming - Final Project
+ * Programmers: Adam Currie and Dylan O'Neill
+ * First Version: 2015-12-08
+ * Description: Contains the SetupPage class and the code behind the setup page of the project.
+                The methods in this file allow the user to select the puzzle type (image or number).
+*/
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,6 +41,11 @@ namespace TilePuzzle {
             this.InitializeComponent();
         }
 
+        //Method      : loadImageButton_Click
+        //Description : Handler for image button click event, lets user select image for game
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void         
         private async void loadImageButton_Click(object sender, RoutedEventArgs e) {
             if(ApplicationView.Value == ApplicationViewState.Snapped) {
                 ApplicationView.TryUnsnap();
@@ -66,6 +79,11 @@ namespace TilePuzzle {
             }   
         }
 
+        //Method      : numberedTilesButton_Click
+        //Description : Handler for numbered tiles button click event, sends user to game page
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void         
         private void numberedTilesButton_Click(object sender, RoutedEventArgs e){
             this.Frame.Navigate(typeof(GamePage));
         }
