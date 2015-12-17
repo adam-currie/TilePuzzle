@@ -115,7 +115,7 @@ namespace TilePuzzle {
                     index++;
                 }
             }
-       
+
             //Add tiles to grid
             for (int i = 0; i < tiles.Count - 1; i++)  {
 
