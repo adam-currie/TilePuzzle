@@ -137,12 +137,6 @@ namespace TilePuzzle {
 
             loadingImage = false;
             
-            //game timer
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Start();
-            timer.Tick += GameTimerTick;
-            secondsElapsed = 0;
         }
 
         //Method      : loadNumberGame
@@ -158,7 +152,7 @@ namespace TilePuzzle {
         //Parameters  : object sender     - object
         //              RoutedEventArgs e - event args   
         //Returns     : void         
-        private void RandomizeButton_Click(object sender, RoutedEventArgs e) {
+        private async void RandomizeButton_Click(object sender, RoutedEventArgs e) {
             if(loadingImage) {
                 return;
             }
@@ -180,10 +174,10 @@ namespace TilePuzzle {
                 if(done) {
                     break;
                 }
-                }
+            }
 
             Random r = new Random();
-            for(int i=0; i<200*numRowsAndCols; i++) {
+            for(int i = 0; i<200*numRowsAndCols; i++) {
 
                 int dir = r.Next(4);//direction to move empty tile
 
@@ -193,9 +187,8 @@ namespace TilePuzzle {
                             var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY-1);
                             tile.SetValue(Grid.ColumnProperty, emptyX);
                             tile.SetValue(Grid.RowProperty, emptyY);
-
                             emptyY = emptyY-1;
-            }
+                        }
                         break;
                     case 1://move empty down
                         if(emptyY < (numRowsAndCols-1)) {
@@ -222,11 +215,19 @@ namespace TilePuzzle {
                             tile.SetValue(Grid.RowProperty, emptyY);
 
                             emptyX = emptyX+1;
-                }
+                        }
                         break;
+                }
+
+                await Task.Delay(10);
             }
 
-            }
+            //game timer
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Start();
+            timer.Tick += GameTimerTick;
+            secondsElapsed = 0;
         }
 
         //Method      : checkSolved
