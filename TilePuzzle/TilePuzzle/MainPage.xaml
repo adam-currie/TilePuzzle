@@ -1,4 +1,12 @@
-﻿<Page
+﻿<!-- 
+   - File: MainPage.xaml
+   - Project: Windows and Mobile Programming - Final Project
+   - Programmers: Adam Currie and Dylan O'Neill
+   - First Version: 2015-12-08
+   - Description: This page contains the design and layout of the UI of the main page.    
+                  It also defines the necessary events asscociated with each control on the page.
+   -->
+<Page
     x:Class="TilePuzzle.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * File: MainPage.xaml.cs
+ * Project: Windows and Mobile Programming - Final Project
+ * Programmers: Adam Currie and Dylan O'Neill
+ * First Version: 2015-12-08
+ * Description: Contains the MainPage class and the code behind the main page of the project.
+                This file contains the methods for the main menu of the game and allow the user to
+                navigate to other pages or quit the game.
+*/
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,14 +38,29 @@ namespace TilePuzzle
             this.InitializeComponent();
         }
 
+        //Method      : newGameButton_Click
+        //Description : Handler for new game button click event, sends user to setup page 
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void         
         private void newGameButton_Click(object sender, RoutedEventArgs e) {
             this.Frame.Navigate(typeof(SetupPage));
         }
 
+        //Method      : leaderboardButton_Click
+        //Description : Handler for leaderboard button click event, sends user to the leaderboard page
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void         
         private void leaderboardButton_Click(object sender, RoutedEventArgs e) {
             this.Frame.Navigate(typeof(LeaderboardPage));
         }
 
+        //Method      : quitButton_Click
+        //Description : Handler for quit button click event, exits the application
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void         
         private void quitButton_Click(object sender, RoutedEventArgs e)  {
             Application.Current.Exit();
         }
