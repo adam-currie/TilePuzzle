@@ -201,14 +201,7 @@ namespace TilePuzzle {
             //todo: somehow check for empty spot, drop image being dragged into empty spot
             
 
-            //Check if puzzle is solved
-            if(checkSolved() == true){
-                namePopup.IsOpen = true;
-                ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
-                    namePopup.IsOpen = false;
-                    Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
-                };
-            }
+            
         }
 
         private void gamePageGrid_SizeChanged(object sender, SizeChangedEventArgs e) {
@@ -260,6 +253,16 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX, oldY+1) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX);
                     tile.SetValue(Grid.RowProperty, oldY+1);
+
+                    //Check if puzzle is solved
+                    if(checkSolved() == true) {
+                        namePopup.IsOpen = true;
+                        ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
+                            namePopup.IsOpen = false;
+                            Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
+                        };
+                    }
+
                     return;
                 }
             } catch(IndexOutOfRangeException) {
@@ -270,6 +273,16 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX, oldY-1) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX);
                     tile.SetValue(Grid.RowProperty, oldY-1);
+
+                    //Check if puzzle is solved
+                    if(checkSolved() == true) {
+                        namePopup.IsOpen = true;
+                        ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
+                            namePopup.IsOpen = false;
+                            Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
+                        };
+                    }
+
                     return;
                 }
             } catch(IndexOutOfRangeException) {
@@ -280,6 +293,16 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX-1, oldY) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX-1);
                     tile.SetValue(Grid.RowProperty, oldY);
+
+                    //Check if puzzle is solved
+                    if(checkSolved() == true) {
+                        namePopup.IsOpen = true;
+                        ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
+                            namePopup.IsOpen = false;
+                            Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
+                        };
+                    }
+
                     return;
                 }
             } catch(IndexOutOfRangeException) {
@@ -290,6 +313,16 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX+1, oldY) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX+1);
                     tile.SetValue(Grid.RowProperty, oldY);
+
+                    //Check if puzzle is solved
+                    if(checkSolved() == true) {
+                        namePopup.IsOpen = true;
+                        ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
+                            namePopup.IsOpen = false;
+                            Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
+                        };
+                    }
+
                     return;
                 }
             } catch(IndexOutOfRangeException) {
