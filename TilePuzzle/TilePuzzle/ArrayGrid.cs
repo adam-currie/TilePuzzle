@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace TilePuzzle {
 
-    public sealed partial class ArrayGrid : Grid{
+    public class ArrayGrid : Grid{
         private int width, height;
         private List<UIElement> arr;
 
