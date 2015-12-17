@@ -51,7 +51,7 @@ namespace TilePuzzle {
 
         protected override async void OnNavigatedTo(NavigationEventArgs e) {
 
-            //If image was passed create image puzzle, else create number puzzle
+            //If image was passed, create image puzzle, else create number puzzle
             if (e.Parameter != null) {
                 file = e.Parameter as StorageFile;
 
@@ -103,13 +103,10 @@ namespace TilePuzzle {
                     img = new Image();
                     imgBrush = new ImageBrush();
                     img.Source = tile;
-                    img.CanDrag = true;
                     imgBrush.ImageSource = img.Source;
 
                     Rectangle rect = new Rectangle();
                     rect.Fill = imgBrush;
-                    rect.CanDrag = true;
-
                     tiles.Add(rect);
 
                     //Set grid position of each image
@@ -154,6 +151,7 @@ namespace TilePuzzle {
                     index = (int)(random.NextDouble() * tilesRemaining.Count());
                 }
 
+                tilesRemaining[index].CanDrag = true;
                 randomTiles.Add(tilesRemaining[index]);
                 tilesRemaining.RemoveAt(index);
                 tilesPlaced++;
@@ -183,12 +181,11 @@ namespace TilePuzzle {
         }
 
         private bool checkSolved(){
-            bool retValue = false;
+
+            //Check if each tiles is in its orignal postion
+            bool retValue = true;
             for (int i = 0; i < tiles.Count - 1; i++) {
-                if (puzzleGrid.Children[i] == tiles[i]) {
-                    retValue = true;
-                }
-                else {
+                if (puzzleGrid.Children[i] != tiles[i]) {
                     retValue = false;
                 }
             }
@@ -198,11 +195,14 @@ namespace TilePuzzle {
 
         private void puzzleGrid_DragOver(object sender, DragEventArgs e) {
             //todo: anything?
-            e.AcceptedOperation = DataPackageOperation.Copy;
+            e.AcceptedOperation = DataPackageOperation.Move;
         }
 
         private void puzzleGrid_Drop(object sender, DragEventArgs e) {
             //todo: somehow check for empty spot, drop image being dragged into empty spot
+            
+
+            //Check if puzzle is solved
             if(checkSolved() == true){
                 namePopup.IsOpen = true;
                 ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
