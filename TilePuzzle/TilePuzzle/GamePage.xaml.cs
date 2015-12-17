@@ -131,12 +131,12 @@ namespace TilePuzzle {
                     rect.SetValue(Grid.ColumnProperty, i);
 
                     originalTiles.Add(rect);
+                    
                     puzzleGrid.Children.Add(rect);
                 }
             }
-
+          
             loadingImage = false;
-            
         }
 
         //Method      : loadNumberGame
@@ -405,4 +405,5 @@ namespace TilePuzzle {
         }
 
     }
+
 }
