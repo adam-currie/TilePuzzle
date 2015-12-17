@@ -55,16 +55,18 @@ namespace TilePuzzle {
         //Description : Handler for when this page is navigated to
         //Parameters  : NavigationEventArgs e - event args   
         //Returns     : void         
-        protected override void OnNavigatedTo(NavigationEventArgs e) {
+        protected override async void OnNavigatedTo(NavigationEventArgs e) {
 
             //If image was passed, create image puzzle, else create number puzzle
-            if (e.Parameter != null) {
+            if(e.Parameter != null) {
                 file = e.Parameter as StorageFile;
 
                 //list of tiles
                 loadImageGame(file);
-            } else { 
-                loadNumberGame();
+            } else {
+                Uri uri = new Uri("ms-appx:///Assets/numbers.png", UriKind.RelativeOrAbsolute);
+
+                loadImageGame(await StorageFile.GetFileFromApplicationUriAsync(uri));
             }
         }
 
@@ -86,7 +88,6 @@ namespace TilePuzzle {
             //split image into smaller images for puzzle
             for (int i = 0; i < numRowsAndCols; i++) {
                 for (int j = 0; j < numRowsAndCols; j++) {
-
                     IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
 
@@ -131,20 +132,16 @@ namespace TilePuzzle {
                     rect.SetValue(Grid.ColumnProperty, i);
 
                     originalTiles.Add(rect);
-                    
-                    puzzleGrid.Children.Add(rect);
                 }
             }
-          
-            loadingImage = false;
-        }
+            for(int i=0; i<numRowsAndCols*numRowsAndCols-1; i++) {
+                puzzleGrid.Children.Add(originalTiles[i]);
+            }
 
-        //Method      : loadNumberGame
-        //Description : Loads a new tile puzzle with numbers
-        //Parameters  : none
-        //Returns     : void         
-        private void loadNumberGame() {
-            //todo
+            loadingImage = false;
+
+            RandomizeButton_Click(this, new RoutedEventArgs());
+
         }
 
         //Method      : RandomizeButton_Click
@@ -152,10 +149,16 @@ namespace TilePuzzle {
         //Parameters  : object sender     - object
         //              RoutedEventArgs e - event args   
         //Returns     : void         
-        private async void RandomizeButton_Click(object sender, RoutedEventArgs e) {
+        private void RandomizeButton_Click(object sender, RoutedEventArgs e) {
             if(loadingImage) {
                 return;
             }
+
+            try {
+                timer.Tick -= GameTimerTick;
+                timeText.Text = "Time Elapsed: " + 0;
+            } catch(ArgumentException) { }//incase timer is not set
+
 
             int emptyX = 0;
             int emptyY = 0;
@@ -177,10 +180,10 @@ namespace TilePuzzle {
             }
 
             Random r = new Random();
-            for(int i = 0; i<200*numRowsAndCols; i++) {
+            for(int i = 0; i<100*numRowsAndCols; i++) {
 
                 int dir = r.Next(4);//direction to move empty tile
-
+                //todo: figure out why top left tile stops moving
                 switch(dir) {
                     case (0)://move empty up(move tile above down)
                         if(emptyY > 0) {
@@ -218,8 +221,6 @@ namespace TilePuzzle {
                         }
                         break;
                 }
-
-                await Task.Delay(10);
             }
 
             //game timer
@@ -405,5 +406,4 @@ namespace TilePuzzle {
         }
 
     }
-
 }
