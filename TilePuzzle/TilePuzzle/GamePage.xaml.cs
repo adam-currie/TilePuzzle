@@ -45,7 +45,7 @@ namespace TilePuzzle {
         private DispatcherTimer timer = null;
         private int secondsElapsed;
         private bool loadingImage = false;
-        private List<Rectangle> originalTiles = new List<Rectangle>(numRowsAndCols*numRowsAndCols);
+        private Rectangle[,] originalTiles = new Rectangle[numRowsAndCols, numRowsAndCols];
 
         public GamePage() {
             this.InitializeComponent();
@@ -82,12 +82,16 @@ namespace TilePuzzle {
             loadingImage = true;
 
             //clear old
-            originalTiles.Clear();
             puzzleGrid.Children.Clear();
 
             //split image into smaller images for puzzle
-            for (int i = 0; i < numRowsAndCols; i++) {
-                for (int j = 0; j < numRowsAndCols; j++) {
+            for (int x = 0; x < numRowsAndCols; x++) {
+                for (int y = 0; y < numRowsAndCols; y++) {
+                    if(x == numRowsAndCols-1 && y == numRowsAndCols-1) {
+                        //ignore last
+                        break;
+                    }
+
                     IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read);
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
 
@@ -106,8 +110,8 @@ namespace TilePuzzle {
                     BitmapBounds bounds = new BitmapBounds();
                     bounds.Height = croppedSize/4;
                     bounds.Width = croppedSize/4;
-                    bounds.X = ((decoder.PixelWidth-croppedSize)/2) + ((uint)i * bounds.Width);
-                    bounds.Y = ((decoder.PixelHeight-croppedSize)/2) + ((uint)j * bounds.Height);
+                    bounds.X = ((decoder.PixelWidth-croppedSize)/2) + ((uint)x * bounds.Width);
+                    bounds.Y = ((decoder.PixelHeight-croppedSize)/2) + ((uint)y * bounds.Height);
                     encoder.BitmapTransform.Bounds = bounds;
 
                     try {
@@ -128,14 +132,21 @@ namespace TilePuzzle {
                     rect.Fill = imgBrush;
 
                     //Set grid position of each image
-                    rect.SetValue(Grid.RowProperty, j);
-                    rect.SetValue(Grid.ColumnProperty, i);
+                    rect.SetValue(Grid.RowProperty, y);
+                    rect.SetValue(Grid.ColumnProperty, x);
 
-                    originalTiles.Add(rect);
+                    originalTiles[x, y] = rect;
                 }
             }
-            for(int i=0; i<numRowsAndCols*numRowsAndCols-1; i++) {
-                puzzleGrid.Children.Add(originalTiles[i]);
+
+            for(int x = 0; x < numRowsAndCols; x++) {
+                for(int y = 0; y < numRowsAndCols; y++) {
+                    if(x == numRowsAndCols-1 && y == numRowsAndCols-1) {
+                        //ignore last
+                        break;
+                    }
+                    puzzleGrid.Children.Add(originalTiles[x, y]);
+                }
             }
 
             loadingImage = false;
@@ -239,9 +250,17 @@ namespace TilePuzzle {
 
             //Check if each tiles is in its orignal postion
             bool solved = true;
-            for (int i = 0; i < originalTiles.Count - 1; i++) {
-                if (puzzleGrid.Children[i] != originalTiles[i]) {
-                    solved = false;
+            for(int x = 0; x<numRowsAndCols; x++) {
+                for(int y = 0; y<numRowsAndCols; y++) {
+                    if(x == numRowsAndCols-1 && y == numRowsAndCols-1) {
+                        //ignore last
+                        break;
+                    }
+
+                    if(Grid.GetColumn(originalTiles[x,y]) != x || Grid.GetRow(originalTiles[x, y]) != y) {
+                        solved = false;
+                        break;
+                    }
                 }
             }
 
