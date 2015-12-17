@@ -29,34 +29,25 @@ namespace TilePuzzle {
     /// </summary>
     public sealed partial class GamePage : Page {
 
-        private const int gridSize = 1000;
-        private const int tileSize = 250;
         private const int numRowsAndCols = 4;
 
         private StorageFile file;
-
-        private ImageBrush imgBrush;
-        private Image img;
-        
-        private List<Rectangle> tiles;
-        private List<Rectangle> randomTiles;
-
         private DispatcherTimer timer = null;
-
         private int secondsElapsed;
+        private bool loadingImage = false;
+        private List<Rectangle> originalTiles = new List<Rectangle>(numRowsAndCols*numRowsAndCols);
 
         public GamePage() {
             this.InitializeComponent();
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e) {
+        protected override void OnNavigatedTo(NavigationEventArgs e) {
 
             //If image was passed, create image puzzle, else create number puzzle
             if (e.Parameter != null) {
                 file = e.Parameter as StorageFile;
 
                 //list of tiles
-                tiles = new List<Rectangle>();
                 loadImageGame(file);
             } else { 
                 loadNumberGame();
@@ -64,8 +55,17 @@ namespace TilePuzzle {
         }
 
         private async void loadImageGame(StorageFile file) {
-            //split image into 16 smaller images for puzzle
-            int index = 0;
+            if(loadingImage) {
+                return;
+            }
+
+            loadingImage = true;
+
+            //clear old
+            originalTiles.Clear();
+            puzzleGrid.Children.Clear();
+
+            //split image into smaller images for puzzle
             for (int i = 0; i < numRowsAndCols; i++) {
                 for (int j = 0; j < numRowsAndCols; j++) {
 
@@ -100,32 +100,31 @@ namespace TilePuzzle {
                     BitmapImage tile = new BitmapImage();
                     tile.SetSource(ras);
 
-                    img = new Image();
-                    imgBrush = new ImageBrush();
+                    Image img = new Image();
+                    ImageBrush imgBrush = new ImageBrush();
                     img.Source = tile;
                     imgBrush.ImageSource = img.Source;
 
                     Rectangle rect = new Rectangle();
                     rect.Fill = imgBrush;
-                    tiles.Add(rect);
 
                     //Set grid position of each image
-                    tiles[index].SetValue(Grid.RowProperty, j);
-                    tiles[index].SetValue(Grid.ColumnProperty, i);
-                    index++;
+                    rect.SetValue(Grid.RowProperty, j);
+                    rect.SetValue(Grid.ColumnProperty, i);
+
+                    originalTiles.Add(rect);
+                    puzzleGrid.Children.Add(rect);
                 }
             }
 
-            //Add tiles to grid
-            for (int i = 0; i < tiles.Count - 1; i++)  {
-                puzzleGrid.Children.Add(tiles[i]);
-            }
+            loadingImage = false;
             
             //game timer
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Start();
             timer.Tick += GameTimerTick;
+            secondsElapsed = 0;
         }
 
         private void loadNumberGame() {
@@ -133,49 +132,73 @@ namespace TilePuzzle {
         }
 
         private void RandomizeButton_Click(object sender, RoutedEventArgs e) {
-            //clear grid
-            puzzleGrid.Children.Clear();
-
-            //Create copy of original tile list so we can randomize
-            randomTiles = new List<Rectangle>();
-            List<Rectangle> tilesRemaining = new List<Rectangle>(tiles);
-            //Remove last image for the discarded corner of puzzle
-            tilesRemaining.RemoveAt(15);
-
-            Random random = new Random();
-            int tilesPlaced = 0;
-            while (tilesPlaced != 15) {
-                int index = 0;
-                if (tilesRemaining.Count > 1) {
-                    index = (int)(random.NextDouble() * tilesRemaining.Count());
-                }
-
-                tilesRemaining[index].CanDrag = true;
-                randomTiles.Add(tilesRemaining[index]);
-                tilesRemaining.RemoveAt(index);
-                tilesPlaced++;
+            if(loadingImage) {
+                return;
             }
 
-            //Add placeholder rectangle to list for the discarded corner of puzzle
-            //(has to be 16 images in list to set positions in 4x4 grid)
-            Rectangle pieceToDiscard = new Rectangle();
-            randomTiles.Add(pieceToDiscard);
+            int emptyX = 0;
+            int emptyY = 0;
 
-
-            //Set positions of each image in grid
-            int randomTileIndex = 0;
-            for (int i = 0; i < numRowsAndCols; i++) {
-                for (int j = 0; j < numRowsAndCols; j++) {
-
-                    randomTiles[randomTileIndex].SetValue(Grid.RowProperty, j);
-                    randomTiles[randomTileIndex].SetValue(Grid.ColumnProperty, i);
-                    randomTileIndex++;
+            //get empty pos
+            bool done = false;
+            for(int x = 0; x<numRowsAndCols; x++) {
+                for(int y = 0; y<numRowsAndCols; y++) {
+                    if(GetAtGridPos(puzzleGrid, x, y) == null) {
+                        emptyX = x;
+                        emptyY = y;
+                        done = true;
+                        break;
+                    }
+                }
+                if(done) {
+                    break;
                 }
             }
 
-            //Place images in grid
-            for (int i = 0; i < randomTiles.Count - 1; i++) {
-                puzzleGrid.Children.Add(randomTiles[i]);
+            Random r = new Random();
+            for(int i=0; i<200*numRowsAndCols; i++) {
+
+                int dir = r.Next(4);//direction to move empty tile
+
+                switch(dir) {
+                    case (0)://move empty up(move tile above down)
+                        if(emptyY > 0) {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY-1);
+                            tile.SetValue(Grid.ColumnProperty, emptyX);
+                            tile.SetValue(Grid.RowProperty, emptyY);
+
+                            emptyY = emptyY-1;
+                        }
+                        break;
+                    case 1://move empty down
+                        if(emptyY < (numRowsAndCols-1)) {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX, emptyY+1);
+                            tile.SetValue(Grid.ColumnProperty, emptyX);
+                            tile.SetValue(Grid.RowProperty, emptyY);
+
+                            emptyY = emptyY+1;
+                        }
+                        break;
+                    case 2://move empty left
+                        if(emptyX > 0) {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX-1, emptyY);
+                            tile.SetValue(Grid.ColumnProperty, emptyX);
+                            tile.SetValue(Grid.RowProperty, emptyY);
+
+                            emptyX = emptyX-1;
+                        }
+                        break;
+                    case 3://move empty right
+                        if(emptyX < (numRowsAndCols-1)) {
+                            var tile = GetAtGridPos(puzzleGrid, emptyX+1, emptyY);
+                            tile.SetValue(Grid.ColumnProperty, emptyX);
+                            tile.SetValue(Grid.RowProperty, emptyY);
+
+                            emptyX = emptyX+1;
+                        }
+                        break;
+                }
+
             }
         }
 
@@ -183,8 +206,8 @@ namespace TilePuzzle {
 
             //Check if each tiles is in its orignal postion
             bool solved = true;
-            for (int i = 0; i < tiles.Count - 1; i++) {
-                if (puzzleGrid.Children[i] != tiles[i]) {
+            for (int i = 0; i < originalTiles.Count - 1; i++) {
+                if (puzzleGrid.Children[i] != originalTiles[i]) {
                     solved = false;
                 }
             }
@@ -212,6 +235,9 @@ namespace TilePuzzle {
         }
 
         private async void ChangePuzzleButton_Click(object sender, RoutedEventArgs e){
+            if(loadingImage) {
+                return;
+            }
 
             //Make sure user wants to change puzzle
             MessageDialog messageDialog = new MessageDialog("Are you sure you want to abandon the current puzzle?");
@@ -238,6 +264,10 @@ namespace TilePuzzle {
         }
 
         private void puzzleGrid_Tapped(object sender, TappedRoutedEventArgs e) {
+            if(loadingImage) {
+                return;
+            }
+
             Rectangle tile = (Rectangle)e.OriginalSource;
             int oldX = Grid.GetColumn(tile);
             int oldY = Grid.GetRow(tile);
