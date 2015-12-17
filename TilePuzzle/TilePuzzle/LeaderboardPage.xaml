@@ -11,7 +11,8 @@
             <CommandBar.Content>
                 <Grid/>
             </CommandBar.Content>
-            <AppBarButton x:Name="backButton" Icon="Back" Label="Back" Click="backButton_Click"/>
+            <AppBarButton x:Name="backButton" Icon="Back"  Label="Back" Click="backButton_Click"/>
+            <AppBarButton x:Name="mainMenuButton" Icon="List" Label="Main Menu" Click="mainMenuButton_Click" />
         </CommandBar>
     </Page.BottomAppBar>
 

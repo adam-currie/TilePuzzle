@@ -67,7 +67,7 @@ namespace TilePuzzle {
                     timeText.Text = score.Time.ToString();
                     timePanel.Children.Add(timeText);
                 }
-            }
+            }          
         }
 
         private void backButton_Click(object sender, RoutedEventArgs e) {
@@ -75,6 +75,10 @@ namespace TilePuzzle {
             if(rootFrame != null && rootFrame.CanGoBack) {
                 rootFrame.GoBack();
             }
+        }
+
+        private void mainMenuButton_Click(object sender, RoutedEventArgs e) {
+            this.Frame.Navigate(typeof(MainPage));
         }
     }
 
