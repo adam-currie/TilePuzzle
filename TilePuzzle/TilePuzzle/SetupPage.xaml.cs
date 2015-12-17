@@ -71,12 +71,7 @@ namespace TilePuzzle {
 
             if(file != null) {
                 this.Frame.Navigate(typeof(GamePage), file);
-            } else {
-                MessageDialog messageDialog = new MessageDialog("Cannot open image.");
-                messageDialog.Commands.Add(new UICommand("Ok"));
-                messageDialog.CancelCommandIndex = 0;
-                await messageDialog.ShowAsync();
-            }   
+            }
         }
 
         //Method      : numberedTilesButton_Click
