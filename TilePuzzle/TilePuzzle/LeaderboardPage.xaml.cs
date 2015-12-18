@@ -40,6 +40,7 @@ namespace TilePuzzle {
         //Parameters  : NavigationEventArgs e - event args   
         //Returns     : void         
         protected override void OnNavigatedTo(NavigationEventArgs e) {
+
             if(e.Parameter != null) {
                 LeaderboardScore score = (LeaderboardScore)e.Parameter;
                 localSettings.Values["leaderboard"] += score.Name + '\n' + score.Time + '|';
@@ -60,10 +61,10 @@ namespace TilePuzzle {
                     string name = values[0];
                     int time = int.Parse(values[1]);
 
-                    //go throught scores until new score's time is greater than score n's time, insert after score n
+                    //go throught scores until new score's time is less than score n's time, insert after score n
                     int i = 0;
                     while(i < scores.Count) {
-                        if(time > scores[i].Time) {
+                        if(time < scores[i].Time) {
                             break;
                         }
                         i++;

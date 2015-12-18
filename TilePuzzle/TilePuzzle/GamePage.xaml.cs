@@ -9,22 +9,16 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.Data.Xml.Dom;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -146,6 +140,19 @@ namespace TilePuzzle {
                 await LoadImageGameAsync(await StorageFile.GetFileFromApplicationUriAsync(uri));
                 RandomizeTiles(this, new RoutedEventArgs());
             }
+
+            //setup tile notification
+            TileTemplateType tileTemplate = TileTemplateType.TileSquare150x150Image;
+            XmlDocument tileXml = TileUpdateManager.GetTemplateContent(tileTemplate);
+            TileNotification notification = new TileNotification(tileXml);
+
+            //set image
+            XmlNodeList nodes = tileXml.GetElementsByTagName("image");
+            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/last_image";
+
+            //update tile
+            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
+            updater.Update(notification);
         }
 
         //Method      : loadImageGame
