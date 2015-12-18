@@ -9,6 +9,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -146,18 +147,18 @@ namespace TilePuzzle {
             SetLiveTile();
         }
 
-        //Method      : loadImageGame
-        //Description : Loads a new tile puzzle with an image
-        //Parameters  : StorageFile file - image
-        //Returns     : void        
+        //Method      : SetLiveTile
+        //Description : saves snapshot of current game and uses it as live tile
+        //Parameters  : none
+        //Returns     : async void        
         private async void SetLiveTile() {
-            
+
             //save tile image
             RenderTargetBitmap rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(puzzleGrid);
             IBuffer buffer = await rtb.GetPixelsAsync();
             StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(
-                "live-tile.png", 
+                "live-tile", 
                 CreationCollisionOption.ReplaceExisting
             );
             IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite);
@@ -178,11 +179,10 @@ namespace TilePuzzle {
 
             //set image
             XmlNodeList nodes = tileXml.GetElementsByTagName("image");
-            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/live-tile.png";
-
-            //update tile
-            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
+            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/" + "live-tile";
+            TileUpdater updater = TileUpdateManager.CreateTileUpdaterForApplication();
             updater.Update(notification);
+
         }
 
         //Method      : loadImageGame
