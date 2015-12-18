@@ -146,10 +146,10 @@ namespace TilePuzzle {
             SetLiveTile();
         }
 
-        //Method      : loadImageGame
-        //Description : Loads a new tile puzzle with an image
-        //Parameters  : StorageFile file - image
-        //Returns     : void        
+        //Method      : SetLiveTile
+        //Description : saves snapshot of current game and uses it as live tile
+        //Parameters  : none
+        //Returns     : async void        
         private async void SetLiveTile() {
             
             //save tile image
