@@ -65,6 +65,11 @@ namespace TilePuzzle
             Application.Current.Exit();
         }
 
+        //Method      : Page_Loaded
+        //Description : This method lets the user continue from the saved game state if their game was terminated or suspended
+        //Parameters  : object sender     - object
+        //              RoutedEventArgs e - event args   
+        //Returns     : void    
         private void Page_Loaded(object sender, RoutedEventArgs e) {
             if(GamePage.CanContinue) {
                 Button btn = new Button() { Content = "Continue" };

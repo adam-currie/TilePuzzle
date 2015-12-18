@@ -55,7 +55,10 @@ namespace TilePuzzle {
         private void nameTextBox_KeyDown(object sender, KeyRoutedEventArgs e) {
             if(e.Key == Windows.System.VirtualKey.Enter) {
                 if(nameTextBox.Text != null) {
-                    GotInput(sender, nameTextBox.Text);
+                    string name = nameTextBox.Text.Trim();
+                    if (name != "") {
+                        GotInput(sender, nameTextBox.Text);
+                    }
                 }
             }
         }
