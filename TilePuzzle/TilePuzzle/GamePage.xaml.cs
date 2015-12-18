@@ -152,24 +152,13 @@ namespace TilePuzzle {
         //Parameters  : none
         //Returns     : async void        
         private async void SetLiveTile() {
-            //remove old
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
-            foreach(StorageFile f in files) {
-                if(f.Path.Contains("live-tile")) {
-                    await f.DeleteAsync();
-                }
-            }
-
-            //set unique filename
-            string fileStr = " live-tile" + Guid.NewGuid();
 
             //save tile image
             RenderTargetBitmap rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(puzzleGrid);
             IBuffer buffer = await rtb.GetPixelsAsync();
             StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(
-                fileStr, 
+                "live-tile", 
                 CreationCollisionOption.ReplaceExisting
             );
             IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite);
@@ -190,7 +179,7 @@ namespace TilePuzzle {
 
             //set image
             XmlNodeList nodes = tileXml.GetElementsByTagName("image");
-            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/" + fileStr;
+            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/" + "live-tile";
             TileUpdater updater = TileUpdateManager.CreateTileUpdaterForApplication();
             updater.Update(notification);
 
