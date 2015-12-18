@@ -64,5 +64,13 @@ namespace TilePuzzle
         private void quitButton_Click(object sender, RoutedEventArgs e)  {
             Application.Current.Exit();
         }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e) {
+            if(GamePage.CanContinue) {
+                Button btn = new Button() { Content = "Continue" };
+                btn.Click += (s,ev) => { Frame.Navigate(typeof(GamePage), new GameNavigationEventArgs(null, true)); };
+                mainPanel.Children.Insert(0, btn);
+            }
+        }
     }
 }
