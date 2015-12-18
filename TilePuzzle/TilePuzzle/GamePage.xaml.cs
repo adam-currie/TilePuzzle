@@ -51,6 +51,7 @@ namespace TilePuzzle {
             this.InitializeComponent();
         }
 
+
         //Method      : OnNavigatedTo
         //Description : Handler for when this page is navigated to
         //Parameters  : NavigationEventArgs e - event args   
@@ -406,4 +407,5 @@ namespace TilePuzzle {
         }
 
     }
+
 }
