@@ -38,14 +38,45 @@ namespace TilePuzzle {
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class GamePage : Page {
-
         private const int numRowsAndCols = 4;
 
-        private StorageFile file;
+        private static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         private DispatcherTimer timer = null;
-        private int secondsElapsed;
+        private int elapsedTime = 0;
         private bool loadingImage = false;
         private Rectangle[,] originalTiles = new Rectangle[numRowsAndCols, numRowsAndCols];
+
+        public static bool CanContinue{
+            get{
+                try {
+                    StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+                    localFolder.GetFileAsync("last_image").AsTask().Wait();
+                } catch(Exception) {
+                    return false;
+                }
+
+                if(localSettings.Values["time"] == null) {
+                    return false;
+                }
+
+                if(localSettings.Values["positions"] == null) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        public int SecondsElapsed{
+            get{
+                return elapsedTime;
+            }
+            set{
+                elapsedTime = value;
+                timeText.Text = "Time Elapsed: " + elapsedTime;
+                localSettings.Values["time"] = elapsedTime;
+            }
+        }
 
         public GamePage() {
             this.InitializeComponent();
@@ -56,17 +87,63 @@ namespace TilePuzzle {
         //Parameters  : NavigationEventArgs e - event args   
         //Returns     : void         
         protected override async void OnNavigatedTo(NavigationEventArgs e) {
-
             //If image was passed, create image puzzle, else create number puzzle
             if(e.Parameter != null) {
-                file = e.Parameter as StorageFile;
+                GameNavigationEventArgs args = e.Parameter as GameNavigationEventArgs;
 
-                //list of tiles
-                loadImageGame(file);
+                if(args.continuing) {
+
+                    try {
+
+                        //load file
+                        StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+                        StorageFile lastImage = await localFolder.GetFileAsync("last_image");
+                        await LoadImageGameAsync(lastImage);
+
+                        //load postions
+                        string positionsString = (string)localSettings.Values["positions"];
+                        if(positionsString != null) {
+                            string[] positions = positionsString.Split('|');
+
+                            for(int i = 0; i<positions.Length && i<puzzleGrid.Children.Count; i++) {
+                                string[] pos = positions[i].Split(',');
+                                if(pos.Length == 2) {
+                                    puzzleGrid.Children[i].SetValue(Grid.ColumnProperty, int.Parse(pos[0]));
+                                    puzzleGrid.Children[i].SetValue(Grid.RowProperty, int.Parse(pos[1]));
+                                }
+                            }
+
+                        }
+
+                        //load time
+                        object timeObj = localSettings.Values["time"];
+                        if(timeObj != null) {
+                            SecondsElapsed = (int)timeObj;
+                        } else {
+                            SecondsElapsed = 0;
+                        }
+                        timer = new DispatcherTimer();
+                        timer.Interval = TimeSpan.FromSeconds(1);
+                        timer.Start();
+                        timer.Tick += GameTimerTick;
+                        SecondsElapsed = 0;
+
+                    } catch(FileNotFoundException) {
+                        Uri uri = new Uri("ms-appx:///Assets/numbers.png", UriKind.RelativeOrAbsolute);
+                        await LoadImageGameAsync(await StorageFile.GetFileFromApplicationUriAsync(uri));
+                        RandomizeTiles(this, new RoutedEventArgs());
+                    }
+
+                } else if(args.file != null) {
+
+                    await LoadImageGameAsync(args.file);
+                    RandomizeTiles(this, new RoutedEventArgs());
+
+                }
             } else {
                 Uri uri = new Uri("ms-appx:///Assets/numbers.png", UriKind.RelativeOrAbsolute);
-
-                loadImageGame(await StorageFile.GetFileFromApplicationUriAsync(uri));
+                await LoadImageGameAsync(await StorageFile.GetFileFromApplicationUriAsync(uri));
+                RandomizeTiles(this, new RoutedEventArgs());
             }
         }
 
@@ -74,7 +151,7 @@ namespace TilePuzzle {
         //Description : Loads a new tile puzzle with an image
         //Parameters  : StorageFile file - image
         //Returns     : void              
-        private async void loadImageGame(StorageFile file) {
+        private async Task LoadImageGameAsync(StorageFile file) {
             if(loadingImage) {
                 return;
             }
@@ -151,7 +228,24 @@ namespace TilePuzzle {
 
             loadingImage = false;
 
-            RandomizeButton_Click(this, new RoutedEventArgs());
+            //save copy of image
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+
+            StorageFile savedCopy = null;
+            try {
+                savedCopy = await localFolder.GetFileAsync("last_image");
+            } catch(Exception) {
+                //if file doesnt exist create it
+                savedCopy = await localFolder.CreateFileAsync(
+                    "last_image",
+                    CreationCollisionOption.ReplaceExisting
+                );
+                
+            }
+            if(file.Path != savedCopy.Path) {
+                await file.CopyAndReplaceAsync(savedCopy);
+            }
+            
 
         }
 
@@ -160,14 +254,14 @@ namespace TilePuzzle {
         //Parameters  : object sender     - object
         //              RoutedEventArgs e - event args   
         //Returns     : void         
-        private void RandomizeButton_Click(object sender, RoutedEventArgs e) {
+        private void RandomizeTiles(object sender, RoutedEventArgs e) {
             if(loadingImage) {
                 return;
             }
 
             try {
                 timer.Tick -= GameTimerTick;
-                timeText.Text = "Time Elapsed: " + 0;
+                SecondsElapsed = 0;
             } catch(ArgumentException) { }//incase timer is not set
 
 
@@ -239,14 +333,28 @@ namespace TilePuzzle {
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Start();
             timer.Tick += GameTimerTick;
-            secondsElapsed = 0;
+            SecondsElapsed = 0;
+
+            //save new positions
+            SavePositions();
+        }
+
+        private void SavePositions() {
+            string posStr = "";
+            foreach(FrameworkElement tile in puzzleGrid.Children) {
+                posStr += Grid.GetColumn(tile);
+                posStr += ",";
+                posStr += Grid.GetRow(tile);
+                posStr += "|";
+            }
+            localSettings.Values["positions"] = posStr;
         }
 
         //Method      : checkSolved
         //Description : Checks to see if the puzzle is solved
         //Parameters  : none
         //Returns     : void         
-        private void checkSolved(){
+        private async void checkSolved(){
 
             //Check if each tiles is in its orignal postion
             bool solved = true;
@@ -268,8 +376,18 @@ namespace TilePuzzle {
                 namePopup.IsOpen = true;
                 ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
                     namePopup.IsOpen = false;
-                    Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, secondsElapsed));
+                    Frame.Navigate(typeof(LeaderboardPage), new LeaderboardScore(name, SecondsElapsed));
                 };
+
+                //delete saved state
+                localSettings.Values["time"] = null;
+                localSettings.Values["positions"] = null;
+
+                try {
+                    StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+                    StorageFile savedCopy = await localFolder.GetFileAsync("last_image");
+                    await savedCopy.DeleteAsync();
+                } catch(FileNotFoundException) { }
             }
         }
 
@@ -330,8 +448,7 @@ namespace TilePuzzle {
         //              object e      - object
         //Returns     : void         
         private void GameTimerTick(object sender, object e)  {
-            secondsElapsed++;
-            timeText.Text = "Time Elapsed: " + secondsElapsed;
+            SecondsElapsed++;
         }
 
         //Method      : puzzleGrid_Tapped
@@ -353,7 +470,7 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX, oldY+1) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX);
                     tile.SetValue(Grid.RowProperty, oldY+1);
-
+                    SavePositions();
                     //Check if puzzle is solved
                     checkSolved();
                     return;
@@ -366,7 +483,7 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX, oldY-1) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX);
                     tile.SetValue(Grid.RowProperty, oldY-1);
-
+                    SavePositions();
                     //Check if puzzle is solved
                     checkSolved();
                     return;
@@ -379,7 +496,7 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX-1, oldY) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX-1);
                     tile.SetValue(Grid.RowProperty, oldY);
-
+                    SavePositions();
                     //Check if puzzle is solved
                     checkSolved();
                     return;
@@ -392,13 +509,13 @@ namespace TilePuzzle {
                 if(GetAtGridPos(puzzleGrid, oldX+1, oldY) == null) {
                     tile.SetValue(Grid.ColumnProperty, oldX+1);
                     tile.SetValue(Grid.RowProperty, oldY);
-
+                    SavePositions();
                     //Check if puzzle is solved
                     checkSolved();
                     return;
                 }
             } catch(IndexOutOfRangeException) {
-            }
+            }            
 
             e.Handled = true;
         }

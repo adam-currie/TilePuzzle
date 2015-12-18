@@ -70,7 +70,7 @@ namespace TilePuzzle {
             StorageFile file = await openPicker.PickSingleFileAsync();
 
             if(file != null) {
-                this.Frame.Navigate(typeof(GamePage), file);
+                this.Frame.Navigate(typeof(GamePage), new GameNavigationEventArgs(file));
             }
         }
 
