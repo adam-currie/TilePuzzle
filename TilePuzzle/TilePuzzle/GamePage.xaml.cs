@@ -21,6 +21,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Popups;
+using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -246,8 +247,6 @@ namespace TilePuzzle {
             if(file.Path != savedCopy.Path) {
                 await file.CopyAndReplaceAsync(savedCopy);
             }
-            
-
         }
 
         //Method      : RandomizeButton_Click
@@ -340,6 +339,10 @@ namespace TilePuzzle {
             SavePositions();
         }
 
+        //Method      : savePositions
+        //Description : saves the position of each tile
+        //Parameters  : none
+        //Returns     : void         
         private void SavePositions() {
             string posStr = "";
             foreach(FrameworkElement tile in puzzleGrid.Children) {
