@@ -65,7 +65,7 @@ namespace TilePuzzle {
             openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
             openPicker.FileTypeFilter.Add(".jpg");
             openPicker.FileTypeFilter.Add(".jpeg");
-            openPicker.FileTypeFilter.Add(".png");//todo: pick supported types
+            openPicker.FileTypeFilter.Add(".png");
 
             StorageFile file = await openPicker.PickSingleFileAsync();
 

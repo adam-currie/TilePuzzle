@@ -10,6 +10,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.Graphics.Imaging;
@@ -142,6 +143,34 @@ namespace TilePuzzle {
                 RandomizeTiles(this, new RoutedEventArgs());
             }
 
+            SetLiveTile();
+        }
+
+        //Method      : loadImageGame
+        //Description : Loads a new tile puzzle with an image
+        //Parameters  : StorageFile file - image
+        //Returns     : void        
+        private async void SetLiveTile() {
+            
+            //save tile image
+            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            await rtb.RenderAsync(puzzleGrid);
+            IBuffer buffer = await rtb.GetPixelsAsync();
+            StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(
+                "live-tile.png", 
+                CreationCollisionOption.ReplaceExisting
+            );
+            IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+            encoder.SetPixelData(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Ignore,
+                (uint)rtb.PixelWidth,
+                (uint)rtb.PixelHeight, 96d, 96d,
+                buffer.ToArray()
+            );
+            await encoder.FlushAsync();
+
             //setup tile notification
             TileTemplateType tileTemplate = TileTemplateType.TileSquare150x150Image;
             XmlDocument tileXml = TileUpdateManager.GetTemplateContent(tileTemplate);
@@ -149,7 +178,7 @@ namespace TilePuzzle {
 
             //set image
             XmlNodeList nodes = tileXml.GetElementsByTagName("image");
-            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/last_image";
+            nodes[0].Attributes[1].NodeValue = "ms-appdata:///local/live-tile.png";
 
             //update tile
             var updater = TileUpdateManager.CreateTileUpdaterForApplication();
@@ -295,7 +324,7 @@ namespace TilePuzzle {
             for(int i = 0; i<100*numRowsAndCols; i++) {
 
                 int dir = r.Next(4);//direction to move empty tile
-                //todo: figure out why top left tile stops moving
+
                 switch(dir) {
                     case (0)://move empty up(move tile above down)
                         if(emptyY > 0) {
