@@ -40,7 +40,10 @@ namespace TilePuzzle {
         //Returns     : void         
         private void OkClicked(object sender, RoutedEventArgs e) {
             if(nameTextBox.Text != null) {
-                GotInput(sender, nameTextBox.Text);
+                string name = nameTextBox.Text.Trim();
+                if(name != "") {
+                    GotInput(sender, name);
+                }
             }
         }
 

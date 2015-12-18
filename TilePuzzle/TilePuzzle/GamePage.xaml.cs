@@ -374,6 +374,8 @@ namespace TilePuzzle {
             }
 
             if (solved)  {
+                timer.Stop();
+
                 namePopup.IsOpen = true;
                 ((GetNamePopup)(namePopup.Child)).GotInput += (popupSender, name) => {
                     namePopup.IsOpen = false;
